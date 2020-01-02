@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Webscoket Client</title>
+</head>
+
+<body>
+    <h1>Websocket Javascript Client</h1>
+    <p id="stateLabel"> Ready to connect</p>
+    <p id="connIDLabel"> ConnID: N/a</p>
+
+    <div>
+        <label for="connectionUrl">Websocket Server Url:</label>
+        <input id="connectionUrl"/>
+        <button id="connectButton" type="submit">Connnect</button>
+        <button id="closeButton" disabled>Close Socket</button>
+    
+    </div>
+<p></p>
+<div>
+    <label for="sendMessage">Message:</label>
+    <input id="sendMessage" disabled/>
+    <button id="sendButton" type="submit" disabled>Send</button>
+
+
+</div>
+<p></p>
+<div>
+    <label for="recipents">Recipent ID:</label>
+    <input id="recipents" disabled/>
+    </div>
+<p></p>
+<h2>Communication Log</h2>
+<table style="width: 800px;">
+    <thead>
+        <tr>
+            <td style="width: 100px;">From</td>
+            <td style="width: 100px;">To</td>
+            <td>Data</td>
+        </tr>
+    </thead>
+<tbody id="commsLog">
+
+</tbody>
+</table>
+<p></p>
+
+<script>
+var connectionUrl = document.getElementById('connectionUrl');
+var connectButton = document.getElementById('connectButton');
+var stateLabel = document.getElementById('stateLabel');
+var sendMessage = document.getElementById('sendMessage');
+var sendButton = document.getElementById('sendButton');
+var closeButton = document.getElementById('closeButton');
+var commsLog = document.getElementById('commsLog');
+var recipents = document.getElementById('recipents');
+var connID = document.getElementById('connIDLabel');
+
+connectionUrl.value = 'ws://localhost:5000';
+
+connectButton.onclick = () =>{
+    stateLabel.innerHTML = "Attempting to connect...";
+    socket = new WebSocket(connectionUrl.value);
+    socket.onopen = (event) =>{
+        updateState();
+        commsLog.innerHTML += '<tr>' +
+           '<td colspan="3"> Connection Opened</td>' +
+           '</tr>';
+    };
+
+    socket.onclose = (event) =>{
+        updateState();
+        commsLog.innerHTML += '<tr>' +
+           '<td colspan="3"> Connection Closed. Code: '+ htmlEscape(event.code) 
+           +  'Reason:' +  htmlEscape(event.reason) +'</td>' +
+           '</tr>';
+    };
+
+    socket.onerror = updateState();
+    socket.onmessage = (event) => {
+        commsLog.innerHTML += '<tr>' +
+           '<td> Server </td>' +
+           '<td> Client </td>' +
+           '<td>' + htmlEscape(event.data) +' </td>' +
+           '</tr>';
+    };
+};
+
+closeButton.onclick = () =>{
+ if(!socket || socket.readyState !== WebSocket.OPEN){
+     alert("Socket not connected");
+ }
+ socket.close(1000, "Closing from client");
+};
+sendButton.onclick = () =>{
+    if(!socket || socket.readyState !== WebSocket.OPEN){
+     alert("Socket not connected");
+ }
+ var data = sendMessage.value;
+ socket.send(data);
+ commsLog.innerHTML += '<tr>' +
+           '<td> Server </td>' +
+           '<td> Client </td>' +
+           '<td>' + htmlEscape(data) +' </td>' +
+           '</tr>';
+}
+const htmlEscape = (str) =>{
+ return str.toString()
+ .replace(/&/g, '&amp;')
+ .replace(/"/g, '&qout;')
+ .replace(/'/g, '&#39;')
+ .replace(/</g, '&lt;')
+ .replace(/>/g, '&gt;')
+}
+
+const updateState = () =>{
+    const disable = () =>{
+        sendMessage.disabled = true;
+        sendButton.disabled = true;
+        closeButton.disabled = true;
+        recipents.disabled = true;
+    }
+
+    const enable = () =>{
+        sendMessage.disabled = false;
+        sendButton.disabled = false;
+        closeButton.disabled = false;
+        recipents.disabled = false;
+    }
+
+    connectionUrl.disabled = true;
+    connectButton.disabled = true;
+    if(!socket){
+        disable();
+    }else{
+        switch (socket.readyState) {
+            case WebSocket.CLOSED:
+                stateLabel.innerHTML = "CLosed";
+                connID.innerHTML = "ConnID: N/a";
+                disable();
+                connectionUrl.disabled = false;
+                connectButton.disabled = false;
+                break;
+            case WebSocket.CLOSING:
+                stateLabel.innerHTML = "Closing.."; 
+                disable();
+                 
+                break;
+             case WebSocket.OPEN:
+                stateLabel.innerHTML = "Open"; 
+                enable(); 
+                break;
+        
+            default:
+              stateLabel.innerHTML = "Unknown WebSocket State: " + htmlEscape(socket.readyState);
+              disable();
+                break;
+        }
+    }
+}
+</script>
+</body>
+
+</html>
