@@ -16,3 +16,5 @@
 /Users/sunkanmi/Documents/Projects/Aspnet/WebsocketProject/WebsocketServer/WebsocketServer/obj/Debug/netcoreapp3.1/WebsocketServer.RazorTargetAssemblyInfo.cache
 /Users/sunkanmi/Documents/Projects/Aspnet/WebsocketProject/WebsocketServer/WebsocketServer/obj/Debug/netcoreapp3.1/WebsocketServer.dll
 /Users/sunkanmi/Documents/Projects/Aspnet/WebsocketProject/WebsocketServer/WebsocketServer/obj/Debug/netcoreapp3.1/WebsocketServer.pdb
+/Users/sunkanmi/Documents/Projects/Aspnet/WebsocketProject/WebsocketServer/WebsocketServer/bin/Debug/netcoreapp3.1/Newtonsoft.Json.dll
+/Users/sunkanmi/Documents/Projects/Aspnet/WebsocketProject/WebsocketServer/WebsocketServer/obj/Debug/netcoreapp3.1/WebsocketServer.csproj.CopyComplete
